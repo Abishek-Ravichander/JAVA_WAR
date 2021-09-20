@@ -5,4 +5,10 @@ resource "aws_instance" "web1" {
   vpc_security_group_ids = ["sg-01718400c2741bdb3"]
    key_name               = "Linux_Terraform-Chef" 
    iam_instance_profile =   "myManagedInstanceRole"
+   user_data = <<-EOF
+		#!/bin/bash
+      sudo amazon-linux-extras install ansible2 -y
+      sudo yum install git -y
+      git clone https://github.com/Abishek-Ravichander/JAVA_WAR.git      
+      EOF
    }
