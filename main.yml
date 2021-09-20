@@ -2,40 +2,28 @@
 - hosts: localhost 
   connection: local
   tasks:
-    - include_role:
-        name: tomcat
-    - name: Install Java 1.7
-      yum: name=java-1.7.0-openjdk
-      state=present
-    - name: add group "tomcat"
-      group: name={{tomcat_group}}
-    - name: add user "tomcat"
-      user: name={{tomcat_user}} group={{tomcat_group}} home=/usr/share/tomcat createhome=no
-      become: True
-      become_method: sudo
-    - name: Download Tomcat
-      get_url: url=http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.61/bin/apache-tomcat-7.0.61.tar.gz dest=/opt/apache-tomcat-7.0.61.tar.gz
-    - name: Extract archive
-      command: chdir=/usr/share /bin/tar xvf /opt/apache-tomcat-7.0.61.tar.gz -C /opt/ creates=/opt/apache-tomcat-7.0.61
-    - name: Symlink install directory
-      file: src=/opt/apache-tomcat-7.0.61 path=/usr/share/tomcat state=link
-    - name: Change ownership of Tomcat installation
-      file: path=/usr/share/tomcat/ owner=tomcat group=tomcat state=directory recurse=yes
-
-    - name: Configure Tomcat server
-      template: src=server.xml dest=/usr/share/tomcat/conf/
-    - name: Create sample directory
-      file:
-      path: "/opt/apache-tomcat-7.0.61/webapps/samples"
-      state: directory
-      mode: 0777
-      become: true
-    - name: copy war file
-      copy: src=./target/JavaWebApplication.war dest=/opt/apache-tomcat-7.0.61/webapps/
-      notify: restart tomcat
-    - name: Install Tomcat init script
-      copy: src=tomcat-initscript.sh dest=/etc/init.d/tomcat mode=0755
-    - name: Start Tomcat
-      service: name=tomcat state=started enabled=yes
-    - name: wait for tomcat to start
-      wait_for: port={{http_port}}
+    - name: update repos
+      yum:
+        name: "*"
+        state: "latest"
+    - name: Installing openJDK
+      yum:
+        name: java-1.8.0-openjdk        
+    - name: Setting default java
+      alternatives:
+        name: java
+        link: /usr/bin/java
+        path: /usr/lib/jvm/jre-1.8.0-openjdk.x86_64/bin/java
+    - name: Downloading tomcat
+      get_url:
+        url: "https://dlcdn.apache.org/tomcat/tomcat-8/v8.5.71/bin/apache-tomcat-8.5.71.tar.gz"
+        dest: /usr/local
+    - name: Extracting downloaded tar file
+      unarchive:
+        src: "/usr/local/apache-tomcat-8.5.71.tar.gz"  
+        dest: /usr/local
+        remote_src: yes
+    - name: Renaming tomcat home
+      command: mv /usr/local/apache-tomcat-8.5.71 /usr/local/tomcat
+    - name: Starting tomcat
+      shell: nohup /usr/local/tomcat/bin/startup.sh &
