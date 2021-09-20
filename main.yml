@@ -27,3 +27,7 @@
       command: mv /usr/local/apache-tomcat-8.5.71 /usr/local/tomcat
     - name: Starting tomcat
       shell: nohup /usr/local/tomcat/bin/startup.sh &
+    - name: copy war into tomcat
+      copy:
+        src: javaWebApplication.war
+        dest: /usr/local/tomcat/webapps
