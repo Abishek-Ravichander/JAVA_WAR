@@ -24,10 +24,10 @@
         dest: /usr/local
         remote_src: yes
     - name: Renaming tomcat home
-      command: mv /usr/local/apache-tomcat-8.5.71 /usr/local/tomcat
-    - name: Starting tomcat
-      shell: nohup /usr/local/tomcat/bin/startup.sh &
+      command: mv /usr/local/apache-tomcat-8.5.71 /usr/local/tomcat    
     - name: copy war into tomcat
       copy:
         src: javaWebApplication.war
         dest: /usr/local/tomcat/webapps
+    - name: Starting tomcat
+      shell: nohup /usr/local/tomcat/bin/startup.sh &
