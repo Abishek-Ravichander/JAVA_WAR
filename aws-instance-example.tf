@@ -9,6 +9,8 @@ resource "aws_instance" "web1" {
 		#!/bin/bash
       sudo amazon-linux-extras install ansible2 -y
       sudo yum install git -y
-      git clone https://github.com/Abishek-Ravichander/JAVA_WAR.git      
+      git clone https://github.com/Abishek-Ravichander/JAVA_WAR.git    
+      cd JAVA_WAR
+      ansible-playbook main.yml -f 10
       EOF
    }
